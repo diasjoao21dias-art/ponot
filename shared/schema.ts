@@ -4,6 +4,11 @@ import { z } from "zod";
 
 // === TABELAS ===
 
+export const settings = sqliteTable("settings", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  companyName: text("company_name").notNull().default("Olivium Sistemas"),
+});
+
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   username: text("username").notNull().unique(),
@@ -18,13 +23,16 @@ export const timeEntries = sqliteTable("time_entries", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id").notNull().references(() => users.id),
   timestamp: integer("timestamp", { mode: "timestamp" }).notNull(),
-  type: text("type", { enum: ["entrada", "saida"] }).notNull(), // Pode expandir para intervalo, etc.
+  type: text("type", { enum: ["entrada", "saida"] }).notNull(),
 });
 
 // === SCHEMAS ===
 
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertTimeEntrySchema = createInsertSchema(timeEntries).omit({ id: true });
+export const updateSettingsSchema = z.object({
+  companyName: z.string().min(1, "Nome da empresa é obrigatório"),
+});
 
 // === TIPOS ===
 
@@ -33,6 +41,8 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 
 export type TimeEntry = typeof timeEntries.$inferSelect;
 export type InsertTimeEntry = z.infer<typeof insertTimeEntrySchema>;
+
+export type Settings = typeof settings.$inferSelect;
 
 // === API CONTRACT TYPES ===
 
@@ -45,12 +55,12 @@ export type CreateUserRequest = InsertUser;
 export type UpdateUserRequest = Partial<InsertUser>;
 
 // Time Entries
-export type CreateTimeEntryRequest = { type: "entrada" | "saida" }; // Timestamp gerado no server
+export type CreateTimeEntryRequest = { type: "entrada" | "saida" };
 export type TimeEntryResponse = TimeEntry & { user?: User };
 
 // Reports
 export type ReportFilter = {
-  startDate?: string; // ISO Date
-  endDate?: string;   // ISO Date
+  startDate?: string;
+  endDate?: string;
   userId?: number;
 };

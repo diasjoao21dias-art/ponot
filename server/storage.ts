@@ -14,6 +14,9 @@ export interface IStorage {
   deleteUser(id: number): Promise<void>;
   listUsers(): Promise<User[]>;
 
+  getSettings(): Promise<Settings>;
+  updateSettings(companyName: string): Promise<Settings>;
+  
   createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry>;
   listTimeEntries(filter?: { userId?: number; startDate?: Date; endDate?: Date }): Promise<(TimeEntry & { user: User })[]>;
   sessionStore: session.Store;
@@ -26,6 +29,24 @@ export class SQLiteStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
+  }
+
+  async getSettings(): Promise<Settings> {
+    const [s] = await db.select().from(settings).where(eq(settings.id, 1));
+    if (!s) {
+      const [newS] = await db.insert(settings).values({ companyName: "Olivium Sistemas" }).returning();
+      return newS;
+    }
+    return s;
+  }
+
+  async updateSettings(companyName: string): Promise<Settings> {
+    const [s] = await db.update(settings).set({ companyName }).where(eq(settings.id, 1)).returning();
+    if (!s) {
+      const [newS] = await db.insert(settings).values({ companyName }).returning();
+      return newS;
+    }
+    return s;
   }
 
   async getUser(id: number): Promise<User | undefined> {

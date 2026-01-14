@@ -7,7 +7,13 @@ export const db = drizzle(sqlite, { schema });
 
 // Initialize tables manually for SQLite in dev mode
 sqlite.exec(`
+  CREATE TABLE IF NOT EXISTS settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_name TEXT NOT NULL DEFAULT 'Olivium Sistemas'
+  );
+
   CREATE TABLE IF NOT EXISTS users (
+
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,

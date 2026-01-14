@@ -18,7 +18,24 @@ export async function registerRoutes(
   // (Handled mainly by setupAuth, but we can add specific ones here if needed, 
   // currently setupAuth handles /api/login, /api/register, /api/logout, /api/user)
 
+  // === SETTINGS ROUTES ===
+  app.get(api.settings.get.path, async (req, res) => {
+    const s = await storage.getSettings();
+    res.json(s);
+  });
+
+  app.post(api.settings.update.path, requireAdmin, async (req, res) => {
+    try {
+      const input = api.settings.update.input.parse(req.body);
+      const s = await storage.updateSettings(input.companyName);
+      res.json(s);
+    } catch (err) {
+      res.status(400).json({ message: "Erro ao atualizar configurações" });
+    }
+  });
+
   // === USERS ROUTES (Admin only) ===
+
   const requireAdmin = (req: any, res: any, next: any) => {
     if (!req.isAuthenticated() || req.user.role !== 'admin') {
       return res.status(403).json({ message: "Acesso negado" });
@@ -105,7 +122,7 @@ export async function registerRoutes(
     
     // Simple AFD-like generation
     // Header
-    let content = `00000000011${pad("12345678901234", 14)}${pad("EMPRESA TESTE", 150)}\n`; // Fake header
+    let content = `00000000011${pad("12345678901234", 14)}${pad(entries[0]?.user.document || "000000000000", 14)}${pad(companyName.toUpperCase(), 150)}\n`; 
     
     let nsr = 1;
     for (const entry of entries) {

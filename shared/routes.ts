@@ -14,6 +14,24 @@ export const errorSchemas = {
 };
 
 export const api = {
+  settings: {
+    get: {
+      method: 'GET' as const,
+      path: '/api/settings',
+      responses: {
+        200: z.object({ companyName: z.string() }),
+      },
+    },
+    update: {
+      method: 'POST' as const,
+      path: '/api/settings',
+      input: z.object({ companyName: z.string() }),
+      responses: {
+        200: z.object({ companyName: z.string() }),
+        403: errorSchemas.unauthorized,
+      },
+    },
+  },
   auth: {
     login: {
       method: 'POST' as const,
