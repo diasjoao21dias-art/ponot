@@ -43,8 +43,8 @@ export default function Login() {
           <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
             <KeyRound size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-foreground font-display">Bem-vindo ao PontoCerto</h1>
-          <p className="text-muted-foreground mt-2">Digite suas credenciais para acessar o sistema</p>
+          <h1 className="text-2xl font-bold text-foreground font-display">Olivium Sistemas</h1>
+          <p className="text-muted-foreground mt-2">Gestão de Ponto</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,7 +89,7 @@ export default function Login() {
         </form>
         
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2026 PontoCerto Enterprise</p>
+          <p>&copy; 2026 Olivium Sistemas</p>
         </div>
       </div>
     </div>
