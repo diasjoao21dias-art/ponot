@@ -5,6 +5,7 @@ import { Loader2, KeyRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import loginBg from "@assets/stock_images/modern_office_busine_8f7d9ebf.jpg";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -37,10 +38,23 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-card rounded-2xl shadow-2xl p-8 border border-border">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Image with Blur */}
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url(${loginBg})`,
+          filter: "blur(8px) brightness(0.7)",
+          transform: "scale(1.1)" // Prevent white edges from blur
+        }}
+      />
+      
+      {/* Dark overlay for better contrast */}
+      <div className="absolute inset-0 z-1 bg-black/20" />
+
+      <div className="max-w-md w-full bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-border/50 relative z-10">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-primary/20 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
             <KeyRound size={32} />
           </div>
           <h1 className="text-2xl font-bold text-foreground font-display">Olivium Sistemas</h1>
@@ -54,7 +68,7 @@ export default function Login() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="h-12 bg-muted/50 border-border text-foreground placeholder:text-muted-foreground"
+              className="h-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground focus:bg-background"
               placeholder="seu.usuario"
               required
             />
@@ -66,7 +80,7 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="h-12 bg-muted/50 border-border text-foreground placeholder:text-muted-foreground"
+              className="h-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground focus:bg-background"
               placeholder="••••••••"
               required
             />
@@ -74,7 +88,7 @@ export default function Login() {
 
           <Button 
             type="submit" 
-            className="w-full h-12 text-base mt-2 font-bold bg-primary text-primary-foreground hover:bg-primary/90" 
+            className="w-full h-12 text-base mt-2 font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg" 
             disabled={isLoggingIn}
           >
             {isLoggingIn ? (
