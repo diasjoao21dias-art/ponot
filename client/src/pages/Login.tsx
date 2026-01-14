@@ -89,7 +89,7 @@ export default function Login() {
         </form>
         
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2024 PontoCerto Enterprise</p>
+          <p>&copy; 2026 PontoCerto Enterprise</p>
         </div>
       </div>
     </div>
