@@ -34,7 +34,7 @@ export class SQLiteStorage implements IStorage {
   async getSettings(): Promise<Settings> {
     const [s] = await db.select().from(settings).where(eq(settings.id, 1));
     if (!s) {
-      const [newS] = await db.insert(settings).values({ companyName: "Olivium Sistemas" }).returning();
+      const [newS] = await db.insert(settings).values({ companyName: "Hospital Med Center" }).returning();
       return newS;
     }
     return s;

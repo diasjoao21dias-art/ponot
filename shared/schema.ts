@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export const settings = sqliteTable("settings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  companyName: text("company_name").notNull().default("Olivium Sistemas"),
+  companyName: text("company_name").notNull().default("Hospital Med Center"),
 });
 
 export const users = sqliteTable("users", {

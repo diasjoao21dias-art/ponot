@@ -9,8 +9,12 @@ export const db = drizzle(sqlite, { schema });
 sqlite.exec(`
   CREATE TABLE IF NOT EXISTS settings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_name TEXT NOT NULL DEFAULT 'Olivium Sistemas'
+    company_name TEXT NOT NULL DEFAULT 'Hospital Med Center'
   );
+
+  // Forçar atualização se a tabela já existir mas com nome antigo
+  sqlite.prepare("UPDATE settings SET company_name = 'Hospital Med Center' WHERE id = 1 AND company_name = 'Olivium Sistemas'").run();
+
 
   CREATE TABLE IF NOT EXISTS users (
 
