@@ -89,9 +89,10 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Não autenticado" });
     }
+    const user = req.user as any;
     const input = api.points.clockIn.input.parse(req.body);
     const entry = await storage.createTimeEntry({
-      userId: req.user!.id,
+      userId: user.id,
       timestamp: new Date(),
       type: input.type
     });
@@ -103,9 +104,10 @@ export async function registerRoutes(
       return res.status(401).json({ message: "Não autenticado" });
     }
 
-    const userId = req.user!.role === 'admin' 
+    const user = req.user as any;
+    const userId = user.role === 'admin' 
       ? (req.query.userId ? parseInt(req.query.userId as string) : undefined)
-      : req.user!.id;
+      : user.id;
 
     const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
