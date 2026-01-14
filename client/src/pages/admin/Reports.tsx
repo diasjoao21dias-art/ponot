@@ -48,11 +48,11 @@ export default function ReportsPage() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.text("PontoCerto", 14, 20);
+    doc.text("Olivium Sistemas", 14, 20);
     
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Relatório de Registro de Pontos", 14, 30);
+    doc.text("Gestão de Ponto", 14, 30);
     
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
@@ -94,7 +94,7 @@ export default function ReportsPage() {
       doc.setPage(i);
       doc.setFontSize(8);
       doc.setTextColor(150);
-      doc.text(`Página ${i} de ${pageCount} - PontoCerto Gestão de Ponto`, 105, 285, { align: "center" });
+      doc.text(`Página ${i} de ${pageCount} - Olivium Sistemas Gestão de Ponto`, 105, 285, { align: "center" });
     }
 
     doc.save(`relatorio_ponto_${startDate}_${endDate}.pdf`);
