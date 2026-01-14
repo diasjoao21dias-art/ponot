@@ -172,7 +172,7 @@ export default function ReportsPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative -z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-0">
         {/* Chart */}
         <Card className="lg:col-span-2 border-none shadow-sm overflow-hidden">
           <CardHeader className="bg-muted/30 border-b border-border/50">
