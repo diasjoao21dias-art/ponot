@@ -14,6 +14,14 @@ export async function registerRoutes(
   // Setup Auth (Passport + Sessions)
   await setupAuth(app);
 
+  // Middleware for admin-only routes
+  const requireAdmin = (req: any, res: any, next: any) => {
+    if (!req.isAuthenticated() || req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Acesso negado" });
+    }
+    next();
+  };
+
   // === AUTH ROUTES ===
   // (Handled mainly by setupAuth, but we can add specific ones here if needed, 
   // currently setupAuth handles /api/login, /api/register, /api/logout, /api/user)
@@ -35,13 +43,6 @@ export async function registerRoutes(
   });
 
   // === USERS ROUTES (Admin only) ===
-
-  const requireAdmin = (req: any, res: any, next: any) => {
-    if (!req.isAuthenticated() || req.user.role !== 'admin') {
-      return res.status(403).json({ message: "Acesso negado" });
-    }
-    next();
-  };
 
   app.get(api.users.list.path, requireAdmin, async (req, res) => {
     const users = await storage.listUsers();
@@ -119,6 +120,8 @@ export async function registerRoutes(
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 
     const entries = await storage.listTimeEntries({ startDate, endDate });
+    const settings = await storage.getSettings();
+    const companyName = settings?.companyName || "Empresa";
     
     // Simple AFD-like generation
     // Header
@@ -166,7 +169,5 @@ export async function registerRoutes(
 function pad(val: string | number, len: number): string {
   let str = String(val);
   while (str.length < len) str = "0" + str;
-  return str.slice(-len); // Take last chars if too long? Or strict? AFD is strict. 
-  // For now simple padding.
-  return str;
+  return str.slice(-len);
 }
