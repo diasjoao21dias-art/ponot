@@ -136,7 +136,10 @@ export default function ReportsPage() {
                 <SelectTrigger className="bg-background border-border w-full">
                   <SelectValue placeholder="Todos os funcionários" />
                 </SelectTrigger>
-                <SelectContent position="popper" sideOffset={4} className="z-[100] bg-popover text-popover-foreground shadow-md border rounded-md min-w-[var(--radix-select-trigger-width)]">
+                <SelectContent 
+                  position="item-aligned" 
+                  className="z-[100] bg-popover text-popover-foreground shadow-md border rounded-md min-w-[var(--radix-select-trigger-width)]"
+                >
                   <SelectItem value="all">Todos os funcionários</SelectItem>
                   {users?.map(u => (
                     <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>
