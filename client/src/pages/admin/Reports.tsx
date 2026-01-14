@@ -6,9 +6,18 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download, Filter, FileText, Loader2 } from "lucide-react";
+import { Download, Filter, FileText, Loader2, FileSpreadsheet, FileJson } from "lucide-react";
 import { type TimeEntry } from "@shared/schema";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import * as XLSX from "xlsx";
+
+declare module "jspdf" {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+  }
+}
 
 export default function ReportsPage() {
   const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), "yyyy-MM-dd"));
@@ -23,15 +32,54 @@ export default function ReportsPage() {
   });
   
   const exportAfd = useExportAfd();
-  const [isExporting, setIsExporting] = useState(false);
+  const [isExporting, setIsExporting] = useState<string | null>(null);
 
-  const handleExport = async () => {
+  const handleExportAFD = async () => {
     try {
-      setIsExporting(true);
+      setIsExporting("afd");
       await exportAfd({ startDate, endDate });
     } finally {
-      setIsExporting(false);
+      setIsExporting(null);
     }
+  };
+
+  const handleExportPDF = () => {
+    if (!points) return;
+    const doc = new jsPDF();
+    
+    doc.text("Relatório de Pontos - PontoCerto", 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Período: ${format(new Date(startDate), "dd/MM/yyyy")} até ${format(new Date(endDate), "dd/MM/yyyy")}`, 14, 22);
+
+    const tableData = points.map(p => [
+      format(new Date(p.timestamp), "dd/MM/yyyy HH:mm:ss"),
+      p.user?.name || "N/A",
+      p.type,
+      `#${p.id}`
+    ]);
+
+    doc.autoTable({
+      head: [["Data/Hora", "Funcionário", "Tipo", "ID"]],
+      body: tableData,
+      startY: 30,
+    });
+
+    doc.save(`relatorio_pontos_${startDate}_${endDate}.pdf`);
+  };
+
+  const handleExportExcel = () => {
+    if (!points) return;
+    const data = points.map(p => ({
+      "Data/Hora": format(new Date(p.timestamp), "dd/MM/yyyy HH:mm:ss"),
+      "Funcionário": p.user?.name || "N/A",
+      "Tipo": p.type,
+      "ID Registro": p.id
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Pontos");
+    XLSX.writeFile(workbook, `relatorio_pontos_${startDate}_${endDate}.xlsx`);
   };
 
   // Process data for chart
@@ -53,14 +101,35 @@ export default function ReportsPage() {
           <h1 className="text-3xl font-bold font-display text-foreground">Relatórios</h1>
           <p className="text-muted-foreground mt-1">Visualize e exporte o histórico de registros</p>
         </div>
-        <Button 
-          onClick={handleExport} 
-          disabled={isExporting}
-          className="gap-2 bg-primary text-primary-foreground font-bold shadow-lg"
-        >
-          {isExporting ? <Loader2 className="animate-spin" /> : <Download size={18} />}
-          Exportar AFD
-        </Button>
+        <div className="flex gap-2 flex-wrap">
+          <Button 
+            onClick={handleExportAFD} 
+            disabled={!!isExporting}
+            variant="outline"
+            className="gap-2"
+          >
+            {isExporting === "afd" ? <Loader2 className="animate-spin" size={18} /> : <FileText size={18} />}
+            AFD
+          </Button>
+          <Button 
+            onClick={handleExportPDF} 
+            disabled={!!isExporting || !points?.length}
+            variant="outline"
+            className="gap-2"
+          >
+            <Download size={18} />
+            PDF
+          </Button>
+          <Button 
+            onClick={handleExportExcel} 
+            disabled={!!isExporting || !points?.length}
+            variant="outline"
+            className="gap-2"
+          >
+            <FileSpreadsheet size={18} />
+            Excel
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
