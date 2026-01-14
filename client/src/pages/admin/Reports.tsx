@@ -50,13 +50,13 @@ export default function ReportsPage() {
     <div className="p-8 max-w-7xl mx-auto space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-display text-slate-900">Relatórios</h1>
-          <p className="text-slate-500 mt-1">Visualize e exporte o histórico de registros</p>
+          <h1 className="text-3xl font-bold font-display text-foreground">Relatórios</h1>
+          <p className="text-muted-foreground mt-1">Visualize e exporte o histórico de registros</p>
         </div>
         <Button 
           onClick={handleExport} 
           disabled={isExporting}
-          className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="gap-2 bg-primary text-primary-foreground font-bold shadow-lg"
         >
           {isExporting ? <Loader2 className="animate-spin" /> : <Download size={18} />}
           Exportar AFD
@@ -64,13 +64,13 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="border-none shadow-sm bg-card/50 backdrop-blur">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="space-y-2 flex-1">
-              <label className="text-sm font-medium text-slate-700">Funcionário</label>
+              <label className="text-sm font-medium text-foreground">Funcionário</label>
               <Select value={selectedUser} onValueChange={setSelectedUser}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-background border-border">
                   <SelectValue placeholder="Todos os funcionários" />
                 </SelectTrigger>
                 <SelectContent>
@@ -83,24 +83,26 @@ export default function ReportsPage() {
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Data Início</label>
+              <label className="text-sm font-medium text-foreground">Data Início</label>
               <Input 
                 type="date" 
                 value={startDate} 
                 onChange={(e) => setStartDate(e.target.value)} 
+                className="bg-background border-border"
               />
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Data Fim</label>
+              <label className="text-sm font-medium text-foreground">Data Fim</label>
               <Input 
                 type="date" 
                 value={endDate} 
                 onChange={(e) => setEndDate(e.target.value)} 
+                className="bg-background border-border"
               />
             </div>
 
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 border-border hover:bg-muted">
               <Filter size={16} /> Filtrar
             </Button>
           </div>
@@ -109,21 +111,26 @@ export default function ReportsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Chart */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Registros por Dia</CardTitle>
+        <Card className="lg:col-span-2 border-none shadow-sm overflow-hidden">
+          <CardHeader className="bg-muted/30 border-b border-border/50">
+            <CardTitle className="text-lg">Registros por Dia</CardTitle>
           </CardHeader>
-          <CardContent className="h-64">
+          <CardContent className="h-64 pt-6">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                <XAxis dataKey="date" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  cursor={{ fill: '#F1F5F9' }}
-                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  cursor={{ fill: 'hsl(var(--muted)/0.3)' }}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))', 
+                    borderRadius: '8px', 
+                    border: '1px solid hsl(var(--border))',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' 
+                  }}
                 />
-                <Bar dataKey="count" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -131,16 +138,16 @@ export default function ReportsPage() {
 
         {/* Stats */}
         <div className="space-y-4">
-          <Card className="bg-blue-50 border-blue-100">
+          <Card className="bg-primary/5 border-primary/10 shadow-sm">
             <CardContent className="p-6">
-              <p className="text-sm font-medium text-blue-600 mb-1">Total de Registros</p>
-              <p className="text-3xl font-bold text-blue-900">{points?.length || 0}</p>
+              <p className="text-sm font-medium text-primary mb-1">Total de Registros</p>
+              <p className="text-4xl font-bold text-foreground">{points?.length || 0}</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-none shadow-sm bg-card">
             <CardContent className="p-6">
-              <p className="text-sm font-medium text-slate-500 mb-1">Funcionários Ativos</p>
-              <p className="text-3xl font-bold text-slate-900">
+              <p className="text-sm font-medium text-muted-foreground mb-1">Funcionários Ativos</p>
+              <p className="text-4xl font-bold text-foreground">
                 {new Set(points?.map(p => p.userId)).size}
               </p>
             </CardContent>
@@ -149,14 +156,14 @@ export default function ReportsPage() {
       </div>
 
       {/* Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Detalhamento</CardTitle>
+      <Card className="border-none shadow-sm overflow-hidden">
+        <CardHeader className="bg-muted/30 border-b border-border/50">
+          <CardTitle className="text-lg">Detalhamento</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border border-slate-200 overflow-hidden">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+              <thead className="bg-muted/50 text-muted-foreground font-medium border-b border-border/50">
                 <tr>
                   <th className="px-6 py-4">Data/Hora</th>
                   <th className="px-6 py-4">Funcionário</th>
@@ -164,28 +171,31 @@ export default function ReportsPage() {
                   <th className="px-6 py-4 text-right">ID Registro</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border/50">
                 {isLoading ? (
-                  <tr><td colSpan={4} className="p-8 text-center text-slate-500">Carregando...</td></tr>
+                  <tr><td colSpan={4} className="p-12 text-center text-muted-foreground">
+                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                    Carregando registros...
+                  </td></tr>
                 ) : points?.length === 0 ? (
-                  <tr><td colSpan={4} className="p-8 text-center text-slate-500">Nenhum registro encontrado no período.</td></tr>
+                  <tr><td colSpan={4} className="p-12 text-center text-muted-foreground italic">Nenhum registro encontrado no período.</td></tr>
                 ) : (
                   points?.map((point) => (
-                    <tr key={point.id} className="hover:bg-slate-50/50">
-                      <td className="px-6 py-4 font-mono text-slate-600">
+                    <tr key={point.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-6 py-4 font-mono text-muted-foreground">
                         {format(new Date(point.timestamp), "dd/MM/yyyy HH:mm:ss")}
                       </td>
-                      <td className="px-6 py-4 font-medium text-slate-900">
+                      <td className="px-6 py-4 font-medium text-foreground">
                         {point.user?.name}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                          point.type === 'entrada' ? 'bg-green-50 text-green-700' : 'bg-orange-50 text-orange-700'
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${
+                          point.type === 'entrada' ? 'bg-green-500/10 text-green-600 dark:text-green-400' : 'bg-orange-500/10 text-orange-600 dark:text-orange-400'
                         }`}>
                           {point.type}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right text-slate-400 text-xs">#{point.id}</td>
+                      <td className="px-6 py-4 text-right text-muted-foreground/50 text-xs">#{point.id}</td>
                     </tr>
                   ))
                 )}

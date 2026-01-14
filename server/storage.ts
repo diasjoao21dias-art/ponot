@@ -1,4 +1,4 @@
-import { users, timeEntries, type User, type InsertUser, type TimeEntry, type InsertTimeEntry } from "@shared/schema";
+import { users, timeEntries, settings, type User, type InsertUser, type TimeEntry, type InsertTimeEntry, type Settings } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 import session from "express-session";
