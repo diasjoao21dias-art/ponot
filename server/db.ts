@@ -12,12 +12,7 @@ sqlite.exec(`
     company_name TEXT NOT NULL DEFAULT 'Hospital Med Center'
   );
 
-  // Forçar atualização se a tabela já existir mas com nome antigo
-  sqlite.prepare("UPDATE settings SET company_name = 'Hospital Med Center' WHERE id = 1 AND company_name = 'Olivium Sistemas'").run();
-
-
   CREATE TABLE IF NOT EXISTS users (
-
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
@@ -34,3 +29,10 @@ sqlite.exec(`
     type TEXT NOT NULL
   );
 `);
+
+// Force update company name if needed
+try {
+  sqlite.prepare("UPDATE settings SET company_name = 'Hospital Med Center' WHERE id = 1").run();
+} catch (e) {
+  // Ignore errors if table doesn't have data yet
+}
