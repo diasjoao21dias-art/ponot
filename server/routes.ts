@@ -116,7 +116,7 @@ export async function registerRoutes(
     res.json(entries);
   });
 
-  // === EXPORT AFD ===
+    // === EXPORT AFD ===
   app.get(api.points.exportAfd.path, requireAdmin, async (req, res) => {
     const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
@@ -125,22 +125,19 @@ export async function registerRoutes(
     const settings = await storage.getSettings();
     const companyName = settings?.companyName || "Empresa";
     
-    // Simple AFD-like generation
-    // Header
-    let content = `00000000011${pad("12345678901234", 14)}${pad(entries[0]?.user.document || "000000000000", 14)}${pad(companyName.toUpperCase(), 150)}\n`; 
+    // AFD (Portaria 671) Generation
+    // Registro 001 - Cabeçalho
+    let content = `0000000011${pad("12345678901234", 14)}${pad("00000000000000", 14)}${pad(companyName.toUpperCase(), 150)}\n`; 
     
     let nsr = 1;
     for (const entry of entries) {
-      // Registro de Ponto (Tipo 3)
-      // NSR (9), Tipo(1), Data(8), Hora(4), PIS(12), CRC(4-optional)
+      // NSR (9), Tipo(1), Data(8), Hora(4), PIS(12)
       const dateStr = entry.timestamp.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
-      // AFD wants DDMMYYYY
-      const dateAfd = dateStr.slice(6,8) + dateStr.slice(4,6) + dateStr.slice(0,4);
+      const dateAfd = dateStr.slice(6,8) + dateStr.slice(4,6) + dateStr.slice(0,4); // DDMMYYYY
+      const timeStr = entry.timestamp.toISOString().split('T')[1].slice(0,5).replace(':', ''); // HHMM
+      const pis = entry.user.document ? entry.user.document.replace(/\D/g, '') : "00000000000";
       
-      const timeStr = entry.timestamp.toISOString().split('T')[1].slice(0,4).replace(':', ''); // HHMM
-      
-      const pis = entry.user.document ? entry.user.document.replace(/\D/g, '') : "000000000000";
-      
+      // NSR(9) + Tipo(3) + Data(8) + Hora(4) + PIS(12)
       content += `${pad(nsr++, 9)}3${dateAfd}${timeStr}${pad(pis, 12)}\n`;
     }
     
