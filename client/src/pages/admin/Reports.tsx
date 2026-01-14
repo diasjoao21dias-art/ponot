@@ -130,13 +130,13 @@ export default function ReportsPage() {
       <Card className="border-none shadow-sm bg-card/50 backdrop-blur">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end">
-            <div className="space-y-2 flex-1">
+            <div className="space-y-2 flex-1 min-w-[200px]">
               <label className="text-sm font-medium text-foreground">Funcionário</label>
               <Select value={selectedUser} onValueChange={setSelectedUser}>
-                <SelectTrigger className="bg-background border-border">
+                <SelectTrigger className="bg-background border-border w-full">
                   <SelectValue placeholder="Todos os funcionários" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[100]">
                   <SelectItem value="all">Todos os funcionários</SelectItem>
                   {users?.map(u => (
                     <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>
