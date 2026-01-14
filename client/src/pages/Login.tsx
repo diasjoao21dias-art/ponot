@@ -5,7 +5,7 @@ import { Loader2, KeyRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import loginBg from "@assets/stock_images/modern_office_busine_8f7d9ebf.jpg";
+import loginBg from "@assets/generated_images/modern_office_meeting_blurred_background.png";
 
 export default function Login() {
   const [username, setUsername] = useState("");
