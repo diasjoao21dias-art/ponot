@@ -42,10 +42,11 @@ export function usePoints(filters?: { startDate?: string; endDate?: string; user
 }
 
 export function useExportAfd() {
-  return async (filters?: { startDate?: string; endDate?: string }) => {
+  return async (filters?: { startDate?: string; endDate?: string; userId?: string }) => {
     const url = new URL(api.points.exportAfd.path, window.location.origin);
     if (filters?.startDate) url.searchParams.set("startDate", filters.startDate);
     if (filters?.endDate) url.searchParams.set("endDate", filters.endDate);
+    if (filters?.userId) url.searchParams.set("userId", filters.userId);
 
     const res = await fetch(url.toString());
     if (!res.ok) throw new Error("Falha ao exportar AFD");
@@ -55,7 +56,7 @@ export function useExportAfd() {
     const downloadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.setAttribute('download', 'arquivo_afd.txt');
+    link.setAttribute('download', `afd_export_${filters?.startDate || 'all'}_${filters?.endDate || 'all'}.txt`);
     document.body.appendChild(link);
     link.click();
     link.remove();

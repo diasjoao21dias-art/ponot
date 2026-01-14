@@ -31,7 +31,11 @@ export default function ReportsPage() {
   const handleExportAFD = async () => {
     try {
       setIsExporting("afd");
-      await exportAfd({ startDate, endDate });
+      await exportAfd({ 
+        startDate, 
+        endDate,
+        userId: selectedUser !== "all" ? selectedUser : undefined
+      });
     } finally {
       setIsExporting(null);
     }

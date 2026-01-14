@@ -122,6 +122,7 @@ export const api = {
       input: z.object({
         startDate: z.string().optional(),
         endDate: z.string().optional(),
+        userId: z.string().optional(),
       }).optional(),
       responses: {
         200: z.any(), // Arquivo blob/text

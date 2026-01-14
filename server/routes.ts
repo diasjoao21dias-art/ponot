@@ -120,8 +120,9 @@ export async function registerRoutes(
   app.get(api.points.exportAfd.path, requireAdmin, async (req, res) => {
     const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+    const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
 
-    const entries = await storage.listTimeEntries({ startDate, endDate });
+    const entries = await storage.listTimeEntries({ userId, startDate, endDate });
     const settings = await storage.getSettings();
     const companyName = settings?.companyName || "Empresa";
     
