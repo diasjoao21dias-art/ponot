@@ -125,11 +125,14 @@ export async function registerRoutes(
     const settings = await storage.getSettings();
     const companyName = settings?.companyName || "Empresa";
     
-    // AFD (Portaria 671) Generation
-    // Registro 001 - Cabeçalho
-    let content = `0000000011${pad("12345678901234", 14)}${pad("00000000000000", 14)}${pad(companyName.toUpperCase(), 150)}\n`; 
-    
+    // AFD (Portaria 671) Generation - Precise Format
+    let content = "";
     let nsr = 1;
+
+    // Registro 001 - Cabeçalho
+    // NSR(9), Tipo(1), Identificador(1), CNPJ/CPF(14), CEI(12), Nome(150), ...
+    content += `${pad(nsr++, 9)}11${pad("12345678901234", 14)}${pad("000000000000", 12)}${pad(companyName.toUpperCase(), 150)}\n`; 
+    
     for (const entry of entries) {
       // NSR (9), Tipo(1), Data(8), Hora(4), PIS(12)
       const dateStr = entry.timestamp.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
@@ -141,8 +144,10 @@ export async function registerRoutes(
       content += `${pad(nsr++, 9)}3${dateAfd}${timeStr}${pad(pis, 12)}\n`;
     }
     
-    // Trailer (Tipo 9)
-    content += `999999999${pad(nsr, 9)}${pad(entries.length, 9)}0\n`;
+    // Registro 999 - Trailer
+    // NSR(9), Tipo(1), Quantidade de registros Tipo 2(9), Tipo 3(9), Tipo 4(9), Tipo 5(9)
+    // Para simplificar, focamos no NSR e quantidade total
+    content += `${pad(nsr, 9)}9${pad(0, 9)}${pad(entries.length, 9)}${pad(0, 9)}${pad(0, 9)}0\n`;
 
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Content-Disposition', 'attachment; filename="afd_export.txt"');
