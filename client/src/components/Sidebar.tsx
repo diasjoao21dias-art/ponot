@@ -21,17 +21,19 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-slate-900 text-white flex flex-col h-screen fixed left-0 top-0 z-50">
       <div className="p-6 border-b border-slate-800">
-        <h1 className="text-xl font-bold font-display tracking-tight flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-              <Clock className="w-5 h-5 text-white" />
-            </div>
-            <span className="truncate">Olivium Sistemas</span>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
+            <Clock className="w-6 h-6 text-white" />
           </div>
-          <span className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold ml-10">
-            Gestão de Ponto
-          </span>
-        </h1>
+          <div className="flex flex-col">
+            <h1 className="text-lg font-bold font-display tracking-tight leading-none text-white">
+              Olivium Sistemas
+            </h1>
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mt-1">
+              Gestão de Ponto
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="flex-1 py-6 px-3 space-y-1">
