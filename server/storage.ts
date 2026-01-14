@@ -1,38 +1,101 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { users, timeEntries, type User, type InsertUser, type TimeEntry, type InsertTimeEntry } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, gte, lte, desc } from "drizzle-orm";
+import session from "express-session";
+import createMemoryStore from "memorystore";
 
-// modify the interface with any CRUD methods
-// you might need
+const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
+  getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, user: Partial<InsertUser>): Promise<User>;
+  deleteUser(id: number): Promise<void>;
+  listUsers(): Promise<User[]>;
+
+  createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry>;
+  listTimeEntries(filter?: { userId?: number; startDate?: Date; endDate?: Date }): Promise<(TimeEntry & { user: User })[]>;
+  sessionStore: session.Store;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+export class SQLiteStorage implements IStorage {
+  sessionStore: session.Store;
 
   constructor() {
-    this.users = new Map();
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000,
+    });
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User> {
+    const [user] = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+    return user;
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
+  }
+
+  async listUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry> {
+    const [newEntry] = await db.insert(timeEntries).values(entry).returning();
+    return newEntry;
+  }
+
+  async listTimeEntries(filter?: { userId?: number; startDate?: Date; endDate?: Date }): Promise<(TimeEntry & { user: User })[]> {
+    let query = db.select({
+      id: timeEntries.id,
+      userId: timeEntries.userId,
+      timestamp: timeEntries.timestamp,
+      type: timeEntries.type,
+      user: users
+    })
+    .from(timeEntries)
+    .leftJoin(users, eq(timeEntries.userId, users.id))
+    .orderBy(desc(timeEntries.timestamp));
+
+    const conditions = [];
+    if (filter?.userId) {
+      conditions.push(eq(timeEntries.userId, filter.userId));
+    }
+    if (filter?.startDate) {
+      conditions.push(gte(timeEntries.timestamp, filter.startDate));
+    }
+    if (filter?.endDate) {
+      conditions.push(lte(timeEntries.timestamp, filter.endDate));
+    }
+
+    if (conditions.length > 0) {
+      // @ts-ignore
+      query = query.where(and(...conditions));
+    }
+
+    // @ts-ignore
+    const rows = await query;
+    return rows.map((row: any) => ({
+      ...row,
+      user: row.user!
+    }));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new SQLiteStorage();
