@@ -41,39 +41,92 @@ export default function ReportsPage() {
     if (!points) return;
     const doc = new jsPDF();
     
-    doc.text("Relatório de Pontos - PontoCerto", 14, 15);
+    // Header styling
+    doc.setFillColor(37, 99, 235); // Primary color
+    doc.rect(0, 0, 210, 40, "F");
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("PontoCerto", 14, 20);
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("Relatório de Registro de Pontos", 14, 30);
+    
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
-    doc.text(`Período: ${format(new Date(startDate), "dd/MM/yyyy")} até ${format(new Date(endDate), "dd/MM/yyyy")}`, 14, 22);
+    doc.text(`Período: ${format(new Date(startDate), "dd/MM/yyyy")} - ${format(new Date(endDate), "dd/MM/yyyy")}`, 140, 25);
+    doc.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy HH:mm")}`, 140, 32);
 
     const tableData = points.map(p => [
       format(new Date(p.timestamp), "dd/MM/yyyy HH:mm:ss"),
       p.user?.name || "N/A",
-      p.type,
+      p.user?.document || "N/A",
+      p.type.toUpperCase(),
       `#${p.id}`
     ]);
 
     autoTable(doc, {
-      head: [["Data/Hora", "Funcionário", "Tipo", "ID"]],
+      head: [["Data/Hora", "Funcionário", "CPF/Doc", "Tipo", "ID"]],
       body: tableData,
-      startY: 30,
+      startY: 50,
+      styles: { fontSize: 9, cellPadding: 3 },
+      headStyles: { fillColor: [37, 99, 235], textColor: [255, 255, 255], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [245, 247, 250] },
+      columnStyles: {
+        3: { fontStyle: 'bold' }
+      },
+      didParseCell: (data) => {
+        if (data.section === 'body' && data.column.index === 3) {
+          const val = String(data.cell.raw).toLowerCase();
+          if (val === 'entrada') {
+            data.cell.styles.textColor = [22, 163, 74];
+          } else if (val === 'saída' || val === 'saida') {
+            data.cell.styles.textColor = [220, 38, 38];
+          }
+        }
+      }
     });
 
-    doc.save(`relatorio_pontos_${startDate}_${endDate}.pdf`);
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(`Página ${i} de ${pageCount} - PontoCerto Gestão de Ponto`, 105, 285, { align: "center" });
+    }
+
+    doc.save(`relatorio_ponto_${startDate}_${endDate}.pdf`);
   };
 
   const handleExportExcel = () => {
     if (!points) return;
     const data = points.map(p => ({
-      "Data/Hora": format(new Date(p.timestamp), "dd/MM/yyyy HH:mm:ss"),
+      "Data": format(new Date(p.timestamp), "dd/MM/yyyy"),
+      "Hora": format(new Date(p.timestamp), "HH:mm:ss"),
       "Funcionário": p.user?.name || "N/A",
-      "Tipo": p.type,
-      "ID Registro": p.id
+      "Documento": p.user?.document || "N/A",
+      "Tipo de Registro": p.type.toUpperCase(),
+      "ID Sistema": p.id
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
+    
+    // Set column widths
+    const wscols = [
+      { wch: 12 }, // Data
+      { wch: 10 }, // Hora
+      { wch: 30 }, // Funcionário
+      { wch: 15 }, // Documento
+      { wch: 15 }, // Tipo
+      { wch: 10 }, // ID
+    ];
+    worksheet['!cols'] = wscols;
+
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Pontos");
-    XLSX.writeFile(workbook, `relatorio_pontos_${startDate}_${endDate}.xlsx`);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Registros de Ponto");
+    XLSX.writeFile(workbook, `relatorio_ponto_${startDate}_${endDate}.xlsx`);
   };
 
   // Process data for chart
