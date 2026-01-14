@@ -10,14 +10,8 @@ import { Download, Filter, FileText, Loader2, FileSpreadsheet, FileJson } from "
 import { type TimeEntry } from "@shared/schema";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
-
-declare module "jspdf" {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
 
 export default function ReportsPage() {
   const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), "yyyy-MM-dd"));
@@ -58,7 +52,7 @@ export default function ReportsPage() {
       `#${p.id}`
     ]);
 
-    doc.autoTable({
+    autoTable(doc, {
       head: [["Data/Hora", "Funcionário", "Tipo", "ID"]],
       body: tableData,
       startY: 30,
