@@ -7,6 +7,7 @@ import { z } from "zod";
 export const settings = sqliteTable("settings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   companyName: text("company_name").notNull().default("Hospital Med Center"),
+  cnpj: text("cnpj").notNull().default("12345678901234"),
 });
 
 export const users = sqliteTable("users", {
@@ -32,6 +33,7 @@ export const insertUserSchema = createInsertSchema(users).omit({ id: true, creat
 export const insertTimeEntrySchema = createInsertSchema(timeEntries).omit({ id: true });
 export const updateSettingsSchema = z.object({
   companyName: z.string().min(1, "Nome da empresa é obrigatório"),
+  cnpj: z.string().min(14, "CNPJ inválido").max(18, "CNPJ inválido"),
 });
 
 // === TIPOS ===

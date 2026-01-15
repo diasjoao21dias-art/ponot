@@ -35,7 +35,7 @@ export async function registerRoutes(
   app.post(api.settings.update.path, requireAdmin, async (req, res) => {
     try {
       const input = api.settings.update.input.parse(req.body);
-      const s = await storage.updateSettings(input.companyName);
+      const s = await storage.updateSettings(input.companyName, input.cnpj);
       res.json(s);
     } catch (err) {
       res.status(400).json({ message: "Erro ao atualizar configurações" });
@@ -116,7 +116,15 @@ export async function registerRoutes(
     res.json(entries);
   });
 
-    // === EXPORT AFD ===
+  function formatAfdDate(date: Date): string {
+    const d = new Date(date);
+    const day = pad(d.getDate(), 2);
+    const month = pad(d.getMonth() + 1, 2);
+    const year = d.getFullYear();
+    return `${day}${month}${year}`;
+  }
+
+  // === EXPORT AFD ===
   app.get(api.points.exportAfd.path, requireAdmin, async (req, res) => {
     const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
@@ -125,7 +133,7 @@ export async function registerRoutes(
     const entries = await storage.listTimeEntries({ userId, startDate, endDate });
     const settings = await storage.getSettings();
     const companyName = (settings?.companyName || "Empresa").substring(0, 150);
-    const cnpj = "12345678901234"; // Idealmente viria de settings também
+    const cnpj = settings?.cnpj || "12345678901234";
     
     // AFD (Portaria 671) Generation
     let content = "";

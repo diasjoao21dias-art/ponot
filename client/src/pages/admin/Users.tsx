@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUsers, useDeleteUser } from "@/hooks/use-users";
 import { UserDialog } from "@/components/UserDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, MoreVertical, Pencil, Trash2, Shield, User as UserIcon } from "lucide-react";
+import { Plus, Search, MoreVertical, Pencil, Trash2, Shield, User as UserIcon, Building2, CreditCard, Loader2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@shared/routes";
+import { type Settings, updateSettingsSchema, type User } from "@shared/schema";
+import { format } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,16 +31,63 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { type User } from "@shared/schema";
-import { format } from "date-fns";
 
 export default function UsersPage() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { data: users, isLoading } = useUsers();
   const deleteUser = useDeleteUser();
   const [search, setSearch] = useState("");
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+
+  const { data: settings } = useQuery<Settings>({ 
+    queryKey: [api.settings.get.path] 
+  });
+
+  const updateSettings = useMutation({
+    mutationFn: async (data: { companyName: string; cnpj: string }) => {
+      const res = await fetch(api.settings.update.path, {
+        method: api.settings.update.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Erro ao atualizar configurações");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.settings.get.path] });
+      toast({ title: "Sucesso", description: "Configurações atualizadas!" });
+    }
+  });
+
+  const settingsForm = useForm({
+    resolver: zodResolver(updateSettingsSchema),
+    defaultValues: {
+      companyName: "",
+      cnpj: ""
+    }
+  });
+
+  useEffect(() => {
+    if (settings) {
+      settingsForm.reset({
+        companyName: settings.companyName,
+        cnpj: settings.cnpj
+      });
+    }
+  }, [settings, settingsForm]);
+
+  const onSettingsSubmit = async (data: any) => {
+    try {
+      await updateSettings.mutateAsync(data);
+      setIsSettingsDialogOpen(false);
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Erro", description: err.message });
+    }
+  };
 
   const filteredUsers = users?.filter(u => 
     u.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -45,16 +101,72 @@ export default function UsersPage() {
           <h1 className="text-3xl font-bold font-display text-slate-900">Funcionários</h1>
           <p className="text-slate-500 mt-1">Gerencie o acesso e cadastro dos colaboradores</p>
         </div>
-        <UserDialog 
-          open={isDialogOpen} 
-          onOpenChange={setIsDialogOpen} 
-          trigger={
-            <Button className="gap-2 shadow-lg shadow-primary/20">
-              <Plus size={18} />
-              Novo Funcionário
-            </Button>
-          } 
-        />
+        <div className="flex gap-2">
+          <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Building2 size={18} />
+                Empresa
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Configurações da Empresa</DialogTitle>
+              </DialogHeader>
+              <Form {...settingsForm}>
+                <form onSubmit={settingsForm.handleSubmit(onSettingsSubmit)} className="space-y-4 pt-4">
+                  <FormField
+                    control={settingsForm.control}
+                    name="companyName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Razão Social</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input className="pl-9" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={settingsForm.control}
+                    name="cnpj"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CNPJ</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input className="pl-9" placeholder="00.000.000/0000-00" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" disabled={updateSettings.isPending}>
+                    {updateSettings.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Salvar Alterações
+                  </Button>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+
+          <UserDialog 
+            open={isDialogOpen} 
+            onOpenChange={setIsDialogOpen} 
+            trigger={
+              <Button className="gap-2 shadow-lg shadow-primary/20">
+                <Plus size={18} />
+                Novo Funcionário
+              </Button>
+            } 
+          />
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
