@@ -184,7 +184,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="border-none shadow-sm bg-card/50 backdrop-blur">
+      <Card className="border-none shadow-sm bg-card/50 backdrop-blur relative z-50">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="space-y-2 flex-1 min-w-[200px]">
@@ -233,9 +233,9 @@ export default function ReportsPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-0">
         {/* Chart */}
-        <Card className="lg:col-span-2 border-none shadow-sm">
+        <Card className="lg:col-span-2 border-none shadow-sm overflow-hidden">
           <CardHeader className="bg-muted/30 border-b border-border/50">
             <CardTitle className="text-lg">Registros por Dia</CardTitle>
           </CardHeader>
