@@ -65,7 +65,7 @@ export function Sidebar() {
           </div>
           <div className="flex-1 overflow-hidden">
             <p className="text-sm font-medium truncate">{user.name}</p>
-            <p className="text-xs text-slate-500 capitalize">{user.role}</p>
+            <p className="text-xs text-slate-500 capitalize">{user.role === "admin" ? "Administrador" : "Funcionário"}</p>
           </div>
         </div>
         

@@ -213,11 +213,11 @@ export default function UsersPage() {
                 <td className="px-6 py-4">
                   {user.role === 'admin' ? (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
-                      <Shield size={12} /> Admin
+                      <Shield size={12} /> Administrador
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                      <UserIcon size={12} /> Func.
+                      <UserIcon size={12} /> Funcionário
                     </span>
                   )}
                 </td>
