@@ -124,36 +124,46 @@ export async function registerRoutes(
 
     const entries = await storage.listTimeEntries({ userId, startDate, endDate });
     const settings = await storage.getSettings();
-    const companyName = settings?.companyName || "Empresa";
+    const companyName = (settings?.companyName || "Empresa").substring(0, 150);
+    const cnpj = "12345678901234"; // Idealmente viria de settings também
     
-    // AFD (Portaria 671) Generation - Precise Format
+    // AFD (Portaria 671) Generation
     let content = "";
     let nsr = 1;
 
-    // Registro 001 - Cabeçalho
-    // NSR(9), Tipo(1), Identificador(1), CNPJ/CPF(14), CEI(12), Nome(150), ...
-    content += `${pad(nsr++, 9)}11${pad("12345678901234", 14)}${pad("000000000000", 12)}${pad(companyName.toUpperCase(), 150)}\n`; 
+    // Registro 001 - Cabeçalho (Padrão Portaria 671)
+    const dataInicial = startDate ? formatAfdDate(startDate) : (entries.length > 0 ? formatAfdDate(entries[entries.length-1].timestamp) : formatAfdDate(new Date()));
+    const dataFinal = endDate ? formatAfdDate(endDate) : formatAfdDate(new Date());
+    const dataGeracao = new Date().toISOString().replace(/\.\d+Z$/, "-0300"); // Formato ISO 8601 aproximado
+
+    // NSR(9), Tipo(1), IdEmpregador(1), CNPJ/CPF(14), CEI(12), Nome(150), NumFabricacao(17), DtIni(8), DtFim(8), DtGeracao(24), Versao(3), ...
+    content += `${pad(0, 9)}11${pad(cnpj, 14)}${pad("", 12)}${pad(companyName.toUpperCase(), 150)}${pad("99999999999999999", 17)}${dataInicial}${dataFinal}${pad(dataGeracao, 24)}003${pad("99999999999999999", 17)}1${pad(cnpj, 14)}${pad("", 4)}\r\n`; 
     
     for (const entry of entries) {
-      // NSR (9), Tipo(1), Data(8), Hora(4), PIS(12)
-      const dateStr = entry.timestamp.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
-      const dateAfd = dateStr.slice(6,8) + dateStr.slice(4,6) + dateStr.slice(0,4); // DDMMYYYY
-      const timeStr = entry.timestamp.toISOString().split('T')[1].slice(0,5).replace(':', ''); // HHMM
-      const pis = entry.user.document ? entry.user.document.replace(/\D/g, '') : "00000000000";
+      // Registro Tipo 3 - Marcação de Ponto
+      // NSR(9), Tipo(1), DataHora(24), PIS/CPF(12), CRC(4)
+      const isoDateTime = entry.timestamp.toISOString().replace(/\.\d+Z$/, "-0300");
+      const cpf = entry.user.document ? entry.user.document.replace(/\D/g, '').substring(0, 11) : "00000000000";
       
-      // NSR(9) + Tipo(3) + Data(8) + Hora(4) + PIS(12)
-      content += `${pad(nsr++, 9)}3${dateAfd}${timeStr}${pad(pis, 12)}\n`;
+      content += `${pad(nsr++, 9)}3${pad(isoDateTime, 24)}${pad(cpf, 12)}${pad("", 4)}\r\n`;
     }
     
     // Registro 999 - Trailer
-    // NSR(9), Tipo(1), Quantidade de registros Tipo 2(9), Tipo 3(9), Tipo 4(9), Tipo 5(9)
-    // Para simplificar, focamos no NSR e quantidade total
-    content += `${pad(nsr, 9)}9${pad(0, 9)}${pad(entries.length, 9)}${pad(0, 9)}${pad(0, 9)}0\n`;
+    // NSR(9), Qt2(9), Qt3(9), Qt4(9), Qt5(9), Qt6(9), Qt7(9), Tipo(1), Assinatura(...)
+    content += `${pad(999999999, 9)}${pad(0, 9)}${pad(entries.length, 9)}${pad(0, 9)}${pad(0, 9)}${pad(0, 9)}${pad(0, 9)}9\r\n`;
 
-    res.setHeader('Content-Type', 'text/plain');
-    res.setHeader('Content-Disposition', 'attachment; filename="afd_export.txt"');
+    res.setHeader('Content-Type', 'text/plain; charset=iso-8859-1');
+    res.setHeader('Content-Disposition', `attachment; filename="afd_export_${formatAfdDate(new Date())}.txt"`);
     res.send(content);
   });
+
+  function formatAfdDate(date: Date): string {
+    const d = new Date(date);
+    const day = pad(d.getDate(), 2);
+    const month = pad(d.getMonth() + 1, 2);
+    const year = d.getFullYear();
+    return `${day}${month}${year}`;
+  }
 
   // Seed Admin if not exists
   const existingAdmin = await storage.getUserByUsername('admin');
