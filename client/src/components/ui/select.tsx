@@ -81,6 +81,7 @@ const SelectContent = React.forwardRef<
         className
       )}
       position={position}
+      style={{ isolation: 'isolate', backgroundColor: 'hsl(var(--popover))' }}
       {...props}
     >
       <SelectScrollUpButton />

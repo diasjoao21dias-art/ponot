@@ -184,7 +184,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="border-none shadow-sm bg-card backdrop-blur relative z-50">
+      <Card className="border-none shadow-sm bg-card relative z-50">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="space-y-2 flex-1 min-w-[200px] relative">
@@ -199,9 +199,9 @@ export default function ReportsPage() {
                   className="bg-popover text-popover-foreground shadow-xl border border-border rounded-md min-w-[var(--radix-select-trigger-width)]"
                   style={{ zIndex: 9999, backgroundColor: 'hsl(var(--popover))', opacity: 1 }}
                 >
-                  <SelectItem value="all" className="bg-popover">Todos os funcionários</SelectItem>
+                  <SelectItem value="all">Todos os funcionários</SelectItem>
                   {users?.map(u => (
-                    <SelectItem key={u.id} value={String(u.id)} className="bg-popover">{u.name}</SelectItem>
+                    <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -234,9 +234,9 @@ export default function ReportsPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-0">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Chart */}
-        <Card className="lg:col-span-2 border-none shadow-sm overflow-hidden">
+        <Card className="lg:col-span-2 border-none shadow-sm">
           <CardHeader className="bg-muted/30 border-b border-border/50">
             <CardTitle className="text-lg">Registros por Dia</CardTitle>
           </CardHeader>

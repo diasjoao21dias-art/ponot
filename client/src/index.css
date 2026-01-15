@@ -8,6 +8,8 @@
   /* Refined Professional Light/Dark Hybrid Palette */
   --background: 210 20% 98%;
   --foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
   
   --primary: 221 83% 53%;
   --primary-foreground: 210 40% 98%;
@@ -45,6 +47,8 @@
 .dark {
   --background: 222 47% 4%;
   --foreground: 210 40% 98%;
+  --popover: 222 47% 4%;
+  --popover-foreground: 210 40% 98%;
   
   --primary: 217 91% 60%;
   --primary-foreground: 222 47% 4%;
