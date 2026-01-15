@@ -116,6 +116,12 @@ export async function registerRoutes(
     res.json(entries);
   });
 
+  function pad(val: string | number, len: number): string {
+    let str = String(val);
+    while (str.length < len) str = "0" + str;
+    return str.slice(-len);
+  }
+
   function formatAfdDate(date: Date): string {
     const d = new Date(date);
     const day = pad(d.getDate(), 2);
@@ -140,8 +146,8 @@ export async function registerRoutes(
     let nsr = 1;
 
     // Formatação de datas para o cabeçalho
-    const dataInicial = startDate ? formatAfdDate(startDate) : (entries.length > 0 ? formatAfdDate(entries[entries.length-1].timestamp) : formatAfdDate(new Date()));
-    const dataFinal = endDate ? formatAfdDate(endDate) : formatAfdDate(new Date());
+    const dataInicial = formatAfdDate(startDate || (entries.length > 0 ? entries[entries.length-1].timestamp : new Date()));
+    const dataFinal = formatAfdDate(endDate || new Date());
     const dataGeracao = formatAfdDate(new Date());
     const horaGeracao = pad(new Date().getHours(), 2) + pad(new Date().getMinutes(), 2);
 
@@ -168,14 +174,6 @@ export async function registerRoutes(
     res.setHeader('Content-Disposition', `attachment; filename="afd_export_${formatAfdDate(new Date())}.txt"`);
     res.send(content);
   });
-
-  function formatAfdDate(date: Date): string {
-    const d = new Date(date);
-    const day = pad(d.getDate(), 2);
-    const month = pad(d.getMonth() + 1, 2);
-    const year = d.getFullYear();
-    return `${day}${month}${year}`;
-  }
 
   // Seed Admin if not exists
   const existingAdmin = await storage.getUserByUsername('admin');
