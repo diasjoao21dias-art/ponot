@@ -1,16 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type CreateTimeEntryRequest } from "@shared/routes";
+import { api } from "@shared/routes";
 import { z } from "zod";
 
 export function useClockIn() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: CreateTimeEntryRequest) => {
-      const validated = api.points.clockIn.input.parse(data);
+    mutationFn: async (data: { type: 'entrada' | 'saida' }) => {
       const res = await fetch(api.points.clockIn.path, {
         method: api.points.clockIn.method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(validated),
+        body: JSON.stringify(data),
       });
 
       if (!res.ok) throw new Error("Erro ao registrar ponto");
