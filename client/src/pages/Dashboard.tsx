@@ -83,7 +83,12 @@ export default function Dashboard() {
         <Card className="w-full md:w-80 border-slate-200 shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${isWorking ? 'bg-green-500' : 'bg-slate-300'}`} />
+              <div className="relative flex items-center justify-center">
+                <div className={`w-3 h-3 rounded-full ${isWorking ? 'bg-green-500' : 'bg-slate-300'}`} />
+                {isWorking && (
+                  <div className="absolute w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75" />
+                )}
+              </div>
               Status Atual
             </CardTitle>
           </CardHeader>
