@@ -35,8 +35,8 @@ export class SQLiteStorage implements IStorage {
     const [s] = await db.select().from(settings).where(eq(settings.id, 1));
     if (!s) {
       const [newS] = await db.insert(settings).values({ 
-        companyName: "Hospital Med Center",
-        cnpj: "12345678901234"
+        companyName: "HOSPITAL MED CENTER LTDA",
+        cnpj: "42938662000157"
       }).returning();
       return newS;
     }

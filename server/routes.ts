@@ -138,8 +138,10 @@ export async function registerRoutes(
 
     const entries = await storage.listTimeEntries({ userId, startDate, endDate });
     const settings = await storage.getSettings();
-    const companyName = (settings?.companyName || "Empresa").substring(0, 150);
-    const cnpj = (settings?.cnpj || "00000000000000").replace(/\D/g, '');
+    
+    // Dados da empresa fixos ou do banco
+    const companyName = (settings?.companyName || "HOSPITAL MED CENTER LTDA").substring(0, 150);
+    const cnpj = (settings?.cnpj || "42938662000157").replace(/\D/g, '');
     
     // AFD (Portaria 671) Generation
     let content = "";
