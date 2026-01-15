@@ -184,7 +184,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="border-none shadow-sm bg-card/50 backdrop-blur relative z-30">
+      <Card className="border-none shadow-sm bg-card/50 backdrop-blur">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="space-y-2 flex-1 min-w-[200px]">
@@ -196,7 +196,8 @@ export default function ReportsPage() {
                 <SelectContent 
                   position="popper" 
                   sideOffset={4}
-                  className="z-[100] bg-popover text-popover-foreground shadow-md border rounded-md min-w-[var(--radix-select-trigger-width)]"
+                  className="bg-popover text-popover-foreground shadow-md border rounded-md min-w-[var(--radix-select-trigger-width)]"
+                  style={{ zIndex: 9999 }}
                 >
                   <SelectItem value="all">Todos os funcionários</SelectItem>
                   {users?.map(u => (
@@ -233,9 +234,9 @@ export default function ReportsPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-0">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Chart */}
-        <Card className="lg:col-span-2 border-none shadow-sm overflow-hidden">
+        <Card className="lg:col-span-2 border-none shadow-sm">
           <CardHeader className="bg-muted/30 border-b border-border/50">
             <CardTitle className="text-lg">Registros por Dia</CardTitle>
           </CardHeader>
