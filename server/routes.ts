@@ -161,7 +161,7 @@ export async function registerRoutes(
 
     // Registro 001 - Cabeçalho (Padrão Portaria 1510/671)
     // NSR(9) "000000000", Tipo(1) "1", IdEmpregador(1) "1" (CNPJ), CNPJ(14), CEI(12), Razão Social(150), NumFabricaçãoREP(17), DtIni(8), DtFim(8), DtGeracao(8), HrGeracao(4)
-    content += `${pad(0, 9)}11${pad(cnpj, 14)}${pad("", 12)}${pad(companyName.toUpperCase(), 150)}${pad("99999999999999999", 17)}${dataInicial}${dataFinal}${dataGeracao}${horaGeracao}\r\n`; 
+    content += `${pad(0, 9)}11${pad(cnpj, 14)}${pad(settings?.cei?.replace(/\D/g, '') || "", 12)}${pad(companyName.toUpperCase(), 150)}${pad("99999999999999999", 17)}${dataInicial}${dataFinal}${dataGeracao}${horaGeracao}\r\n`; 
     
     for (const entry of entries) {
       // Registro Tipo 3 - Marcação de Ponto
