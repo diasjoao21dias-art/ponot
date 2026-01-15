@@ -184,7 +184,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="border-none shadow-sm bg-card/50 backdrop-blur relative z-50">
+      <Card className="border-none shadow-sm bg-card/50 backdrop-blur relative z-30">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="space-y-2 flex-1 min-w-[200px]">
@@ -194,7 +194,8 @@ export default function ReportsPage() {
                   <SelectValue placeholder="Todos os funcionários" />
                 </SelectTrigger>
                 <SelectContent 
-                  position="item-aligned" 
+                  position="popper" 
+                  sideOffset={4}
                   className="z-[100] bg-popover text-popover-foreground shadow-md border rounded-md min-w-[var(--radix-select-trigger-width)]"
                 >
                   <SelectItem value="all">Todos os funcionários</SelectItem>
