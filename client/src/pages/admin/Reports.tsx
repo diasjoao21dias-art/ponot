@@ -184,23 +184,24 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters */}
-      <Card className="border-none shadow-sm bg-card/50 backdrop-blur relative z-50">
+      <Card className="border-none shadow-sm bg-card backdrop-blur relative z-50">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end">
-            <div className="space-y-2 flex-1 min-w-[200px]">
+            <div className="space-y-2 flex-1 min-w-[200px] relative">
               <label className="text-sm font-medium text-foreground">Funcionário</label>
               <Select value={selectedUser} onValueChange={setSelectedUser}>
-                <SelectTrigger className="bg-background border-border w-full">
+                <SelectTrigger className="bg-background border-border w-full relative z-10">
                   <SelectValue placeholder="Todos os funcionários" />
                 </SelectTrigger>
                 <SelectContent 
                   position="popper" 
                   sideOffset={4}
-                  className="bg-popover text-popover-foreground shadow-md border rounded-md min-w-[var(--radix-select-trigger-width)]"
+                  className="bg-popover text-popover-foreground shadow-xl border border-border rounded-md min-w-[var(--radix-select-trigger-width)]"
+                  style={{ zIndex: 9999, backgroundColor: 'hsl(var(--popover))', opacity: 1 }}
                 >
-                  <SelectItem value="all">Todos os funcionários</SelectItem>
+                  <SelectItem value="all" className="bg-popover">Todos os funcionários</SelectItem>
                   {users?.map(u => (
-                    <SelectItem key={u.id} value={String(u.id)}>{u.name}</SelectItem>
+                    <SelectItem key={u.id} value={String(u.id)} className="bg-popover">{u.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
