@@ -197,7 +197,6 @@ export default function ReportsPage() {
                   position="popper" 
                   sideOffset={4}
                   className="bg-popover text-popover-foreground shadow-md border rounded-md min-w-[var(--radix-select-trigger-width)]"
-                  style={{ zIndex: 9999 }}
                 >
                   <SelectItem value="all">Todos os funcionários</SelectItem>
                   {users?.map(u => (
