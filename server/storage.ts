@@ -15,7 +15,7 @@ export interface IStorage {
   listUsers(): Promise<User[]>;
 
   getSettings(): Promise<Settings>;
-  updateSettings(companyName: string, cnpj: string): Promise<Settings>;
+  updateSettings(companyName: string, cnpj: string, cei: string, responsibleCpf: string, address: string): Promise<Settings>;
   
   createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry>;
   listTimeEntries(filter?: { userId?: number; startDate?: Date; endDate?: Date }): Promise<(TimeEntry & { user: User })[]>;
@@ -36,17 +36,20 @@ export class SQLiteStorage implements IStorage {
     if (!s) {
       const [newS] = await db.insert(settings).values({ 
         companyName: "HOSPITAL MED CENTER LTDA",
-        cnpj: "42938662000157"
+        cnpj: "42938662000157",
+        cei: "00000000000000",
+        responsibleCpf: "00000000002",
+        address: "RUA GOVERNADOR VALADARES 1050"
       }).returning();
       return newS;
     }
     return s;
   }
 
-  async updateSettings(companyName: string, cnpj: string): Promise<Settings> {
-    const [s] = await db.update(settings).set({ companyName, cnpj }).where(eq(settings.id, 1)).returning();
+  async updateSettings(companyName: string, cnpj: string, cei: string, responsibleCpf: string, address: string): Promise<Settings> {
+    const [s] = await db.update(settings).set({ companyName, cnpj, cei, responsibleCpf, address }).where(eq(settings.id, 1)).returning();
     if (!s) {
-      const [newS] = await db.insert(settings).values({ companyName, cnpj }).returning();
+      const [newS] = await db.insert(settings).values({ companyName, cnpj, cei, responsibleCpf, address }).returning();
       return newS;
     }
     return s;

@@ -34,8 +34,14 @@ export async function registerRoutes(
 
   app.post(api.settings.update.path, requireAdmin, async (req, res) => {
     try {
-      const input = api.settings.update.input.parse(req.body);
-      const s = await storage.updateSettings(input.companyName, input.cnpj);
+      const input = req.body; // Validation handled by schema sync in shared/routes
+      const s = await storage.updateSettings(
+        input.companyName, 
+        input.cnpj,
+        input.cei,
+        input.responsibleCpf,
+        input.address
+      );
       res.json(s);
     } catch (err) {
       res.status(400).json({ message: "Erro ao atualizar configurações" });

@@ -19,15 +19,33 @@ export const api = {
       method: 'GET' as const,
       path: '/api/settings',
       responses: {
-        200: z.object({ companyName: z.string(), cnpj: z.string() }),
+        200: z.object({ 
+          companyName: z.string(), 
+          cnpj: z.string(),
+          cei: z.string(),
+          responsibleCpf: z.string(),
+          address: z.string()
+        }),
       },
     },
     update: {
       method: 'POST' as const,
       path: '/api/settings',
-      input: z.object({ companyName: z.string(), cnpj: z.string() }),
+      input: z.object({ 
+        companyName: z.string(), 
+        cnpj: z.string(),
+        cei: z.string(),
+        responsibleCpf: z.string(),
+        address: z.string()
+      }),
       responses: {
-        200: z.object({ companyName: z.string(), cnpj: z.string() }),
+        200: z.object({ 
+          companyName: z.string(), 
+          cnpj: z.string(),
+          cei: z.string(),
+          responsibleCpf: z.string(),
+          address: z.string()
+        }),
         403: errorSchemas.unauthorized,
       },
     },

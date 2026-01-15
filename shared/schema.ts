@@ -8,6 +8,9 @@ export const settings = sqliteTable("settings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   companyName: text("company_name").notNull().default("HOSPITAL MED CENTER LTDA"),
   cnpj: text("cnpj").notNull().default("42938662000157"),
+  cei: text("cei").notNull().default("00000000000000"),
+  responsibleCpf: text("responsible_cpf").notNull().default("00000000002"),
+  address: text("address").notNull().default("RUA GOVERNADOR VALADARES 1050"),
 });
 
 export const users = sqliteTable("users", {
