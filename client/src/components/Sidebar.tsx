@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { LayoutDashboard, Users, FileText, LogOut, Clock } from "lucide-react";
+import { LayoutDashboard, Users, FileText, LogOut, Clock, Building2 } from "lucide-react";
 
 export function Sidebar() {
   const { user, logout } = useAuth();
@@ -15,6 +15,7 @@ export function Sidebar() {
     ...(isAdmin ? [
       { href: "/admin/users", label: "Funcionários", icon: Users },
       { href: "/admin/reports", label: "Relatórios", icon: FileText },
+      { href: "/admin/settings", label: "Empresa", icon: Building2 },
     ] : []),
   ];
 

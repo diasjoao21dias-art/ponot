@@ -11,6 +11,7 @@ import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import UsersPage from "@/pages/admin/Users";
 import ReportsPage from "@/pages/admin/Reports";
+import SettingsPage from "@/pages/admin/Settings";
 import NotFound from "@/pages/not-found";
 
 function ProtectedRoute({ component: Component, adminOnly = false }: { component: React.ComponentType, adminOnly?: boolean }) {
@@ -59,6 +60,9 @@ function Router() {
       </Route>
       <Route path="/admin/reports">
         <ProtectedRoute component={ReportsPage} adminOnly />
+      </Route>
+      <Route path="/admin/settings">
+        <ProtectedRoute component={SettingsPage} adminOnly />
       </Route>
 
       {/* 404 */}

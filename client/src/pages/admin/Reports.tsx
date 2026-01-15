@@ -207,23 +207,6 @@ export default function ReportsPage() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="space-y-2 flex-1 min-w-[200px]">
-              <label className="text-sm font-medium text-foreground">Empresa (para AFD)</label>
-              <Input 
-                placeholder="Nome da Empresa"
-                defaultValue="Hospital Med Center"
-                className="bg-background border-border"
-                onBlur={async (e) => {
-                  try {
-                    await apiRequest("POST", "/api/settings", { 
-                      companyName: e.target.value,
-                      cnpj: "42938662000157" // CNPJ padrão do Hospital Med Center
-                    });
-                  } catch (err) {}
-                }}
-              />
-            </div>
             
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Data Início</label>
